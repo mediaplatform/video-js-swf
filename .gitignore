@@ -9,5 +9,7 @@ build
 
 *.orig
 
+.idea/
+
 sandbox/*
 !sandbox/*.example

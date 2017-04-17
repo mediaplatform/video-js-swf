@@ -42,6 +42,7 @@ package com.videojs{
         private var _src:String = "";
         private var _rtmpConnectionURL:String = "";
         private var _rtmpStream:String = "";
+		private var _initialBufferTime = 2;
 
         private static var _instance:VideoJSModel;
 
@@ -245,6 +246,13 @@ package com.videojs{
                 play();
             }
         }
+		
+		public function get initialBufferTime():Number{
+			return _initialBufferTime;
+		}
+		public function set initialBufferTime(pValue:Number):void {
+			_initialBufferTime = pValue;
+		}
 
         /**
          * This is used to distinguish a _src that's being set from incoming flashvars,

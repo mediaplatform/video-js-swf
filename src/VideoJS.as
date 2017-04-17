@@ -369,6 +369,9 @@ package{
                 case "rtmpStream":
                     _app.model.rtmpStream = String(pValue);
                     break;
+				case "initialBufferTime":
+					_app.model.initialBufferTime = Number(pValue);
+					break;
                 default:
                     _app.model.broadcastErrorEventExternally(ExternalErrorEventName.PROPERTY_NOT_FOUND, pPropertyName);
                     break;
