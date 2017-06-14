@@ -659,6 +659,18 @@ package com.videojs.providers{
          * Called from FMS for NetStreams. Incorrectly used for NetConnections as well.
          * This is here to prevent runtime errors.
          */
-        public function streamInfo(pObj:Object):void {}
+        public function streamInfo(pObj:Object):void {
+
+        }
+        public function ScriptCommand(cmd:Object):void {
+            if(ExternalInterface.available){
+                ExternalInterface.call("videojs.FlashExtended.NS_ScriptCommand", cmd.toString());
+            }            
+        }
+        public function OverlayCommand(cmd:Object):void {
+            if(ExternalInterface.available){
+                ExternalInterface.call("videojs.FlashExtended.NS_OverlayCommand", cmd.toString());
+            }
+        }
     }
 }
