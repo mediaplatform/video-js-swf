@@ -468,13 +468,7 @@ package com.videojs.providers{
             switch(e.info.code){
                 case "NetConnection.Connect.Success":
                     _model.broadcastEventExternally(ExternalEventName.ON_RTMP_CONNECT_SUCCESS);
-                    try{
-                        //this should not be done by client.
-                        _nc.call("FCSubscribe", null, _src.streamURL); // try to subscribe
-                    }
-                    catch(e:Error){
-
-                    }
+                    //_nc.call("FCSubscribe", null, _src.streamURL); // try to subscribe
                     initNetStream();
                     break;
                 case "NetConnection.Connect.Failed":
