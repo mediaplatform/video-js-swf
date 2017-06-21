@@ -25,6 +25,7 @@ package com.videojs.providers{
         private var _ncRTMPRetryThreshold:int = 3;
         private var _ncRTMPCurrentRetry:int = 0;
         private var _throughputTimer:Timer;
+        private var _currentTimeTimer:Timer;
         private var _currentThroughput:int = 0; // in B/sec
         private var _loadStartTimestamp:int;
         private var _loadStarted:Boolean = false;
@@ -47,7 +48,9 @@ package com.videojs.providers{
         private var _reportEnded:Boolean = false;
         private var _canPlayThrough:Boolean = false;
         private var _loop:Boolean = false;
-		
+        private var _currentTime:Number = 0;
+		private var _lastCurrentTime:Number = 0;
+
         private var _model:VideoJSModel;
 
         public function RTMPVideoProvider(){
@@ -57,6 +60,18 @@ package com.videojs.providers{
             _rtmpRetryTimer.addEventListener(TimerEvent.TIMER, onRTMPRetryTimerTick);
             _throughputTimer = new Timer(250, 0);
             _throughputTimer.addEventListener(TimerEvent.TIMER, onThroughputTimerTick);
+            _currentTimeTimer  = new Timer(250);
+            _currentTimeTimer.addEventListener(TimerEvent.TIMER, onCurrentTimeTimer, false, 0, true);
+        }
+        private function onCurrentTimeTimer(evt:TimerEvent):void
+        {
+            _currentTime = _ns.time;
+            if (_currentTime != _lastCurrentTime && (!_canSeekAhead || !_isSeeking))
+            {               
+                _lastCurrentTime = _currentTime;
+                //dispatchEvent(new TimeEvent(TimeEvent.CURRENT_TIME_CHANGE, false, false, currentTime));
+                _model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
+            }   
         }
 
         public function get loop():Boolean{
@@ -255,6 +270,7 @@ package com.videojs.providers{
                 _pausePending = false;
                 _ns.resume();
                 _isPaused = false;
+                //_currentTimeTimer.stop()
                 _model.broadcastEventExternally(ExternalEventName.ON_RESUME);
                 _model.broadcastEvent(new VideoPlaybackEvent(VideoPlaybackEvent.ON_STREAM_START, {}));
             }
@@ -266,6 +282,7 @@ package com.videojs.providers{
                 _hasEnded = false;
                 _reportEnded = false;
                 _isBuffering = true;
+                //_currentTimeTimer.stop();
                 _model.broadcastEventExternally(ExternalEventName.ON_RESUME);
             }
         }
@@ -442,6 +459,7 @@ package com.videojs.providers{
                 _throughputTimer.stop();
                 _throughputTimer.reset();
                 _model.broadcastEventExternally(ExternalEventName.ON_CAN_PLAY_THROUGH);
+                //_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
             }
             // if it's still loading, but we know its duration, we can check to see if the current transfer rate
             // will sustain uninterrupted playback - this requires the duration to be known, which is currently
@@ -456,8 +474,10 @@ package com.videojs.providers{
                     _throughputTimer.reset();
                     _canPlayThrough = true;
                     _model.broadcastEventExternally(ExternalEventName.ON_CAN_PLAY_THROUGH);
+                    //_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
                 }
             }
+            
         }
 
         private function onRTMPRetryTimerTick(e:TimerEvent):void{
@@ -521,6 +541,8 @@ package com.videojs.providers{
                 case "NetStream.Buffer.Full":
                     _isBuffering = false;
                     _isPlaying = true;
+                    //_currentTimeTimer.stop();
+                    _currentTimeTimer.start();
                     _model.broadcastEventExternally(ExternalEventName.ON_BUFFER_FULL);
                     _model.broadcastEventExternally(ExternalEventName.ON_CAN_PLAY);
                     _model.broadcastEventExternally(ExternalEventName.ON_START);
@@ -554,6 +576,7 @@ package com.videojs.providers{
                     break;
 
                 case "NetStream.Play.Stop":
+                    _currentTimeTimer.stop();
                     _hasEnded = true;
                     _throughputTimer.stop();
                     _throughputTimer.reset();
@@ -663,11 +686,13 @@ package com.videojs.providers{
 
         }
         public function ScriptCommand(cmd:Object):void {
+            //Console.log('ScriptCommand', cmd.toString());
             if(ExternalInterface.available){
                 ExternalInterface.call("videojs.FlashExtended.NS_ScriptCommand", cmd.toString());
             }            
         }
         public function OverlayCommand(cmd:Object):void {
+            //Console.log('OverlayCommand', cmd.toString());
             if(ExternalInterface.available){
                 ExternalInterface.call("videojs.FlashExtended.NS_OverlayCommand", cmd.toString());
             }
