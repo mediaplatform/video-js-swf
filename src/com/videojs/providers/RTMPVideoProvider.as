@@ -599,6 +599,9 @@ package com.videojs.providers{
                     _loadErrored = true;
                     _model.broadcastErrorEventExternally(ExternalErrorEventName.SRC_404);
                     break;
+				case "NetStream.Play.UnpublishNotify":
+					_model.broadcastErrorEventExternally(ExternalErrorEventName.SRC_404);
+					break;
 
                 default:
                     if(e.info.level == "error"){
