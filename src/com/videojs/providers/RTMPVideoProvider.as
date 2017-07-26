@@ -106,8 +106,13 @@ package com.videojs.providers{
         }
 
         public function get duration():Number{
-            if(_metadata != null && _metadata.duration != undefined){
-                return Number(_metadata.duration);
+            if(_metadata != null){
+				if (_metadata.duration != undefined) {
+					return Number(_metadata.duration);	
+				}
+				else {
+					return Infinity;
+				}
             }
             else{
                 return 0;
@@ -115,8 +120,8 @@ package com.videojs.providers{
         }
 
         public function get readyState():int{
-            // if we have metadata and a known duration
-            if(_metadata != null && _metadata.duration != undefined){
+            // if we have metadata
+            if(_metadata != null){
                 // if playback has begun
                 if(_isPlaying){
                     // if the asset can play through without rebuffering
