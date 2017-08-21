@@ -64,10 +64,15 @@ package com.videojs.providers{
             _currentTimeTimer  = new Timer(250);
             _currentTimeTimer.addEventListener(TimerEvent.TIMER, onCurrentTimeTimer, false, 0, true);
 
-			//Start the streamMonitor timer
-			_streamMonitor  = new Timer(250);
-			_streamMonitor.addEventListener( TimerEvent.TIMER, onStreamMonitor );
-			_streamMonitor.start();
+			      //Start the streamMonitor timer
+			      _streamMonitor  = new Timer(250);
+			      _streamMonitor.addEventListener( TimerEvent.TIMER, onStreamMonitor );
+			      _streamMonitor.start();
+
+            if (ExternalInterface.available)
+            {
+                ExternalInterface.call('console.log', "[RTMPVideoProvider]");
+            }
         }
         private function onCurrentTimeTimer(evt:TimerEvent):void
         {
@@ -108,7 +113,7 @@ package com.videojs.providers{
         public function get duration():Number{
             if(_metadata != null){
 				if (_metadata.duration != undefined) {
-					return Number(_metadata.duration);	
+					return Number(_metadata.duration);
 				}
 				else {
 					return Infinity;
