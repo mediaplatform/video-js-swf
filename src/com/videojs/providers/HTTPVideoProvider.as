@@ -622,7 +622,7 @@ package com.videojs.providers{
                         _isSeeking = false;
                         _model.broadcastEventExternally(ExternalEventName.ON_SEEK_COMPLETE);
                     }
-                    //_currentTimeTimer.start();
+                    _currentTimeTimer.start();
                     _pausedSeekValue = -1;
                     _playbackStarted = true;
                     if(_pausePending){
