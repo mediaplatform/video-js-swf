@@ -39,6 +39,7 @@ package com.videojs.providers{
         private var _nc:NetConnection;
         private var _ns:NetStream;
         private var _throughputTimer:Timer;
+        private var _currentTimeTimer:Timer;
         private var _currentThroughput:int = 0; // in B/sec
         private var _loadStartTimestamp:int;
         private var _loadStarted:Boolean = false;
@@ -84,6 +85,8 @@ package com.videojs.providers{
         private var _canPlayThrough:Boolean = false;
         private var _loop:Boolean = false;
         private var _durationOverride:Number;
+        private var _currentTime:Number = 0;
+		    private var _lastCurrentTime:Number = 0;
 
         private var _model:VideoJSModel;
 
@@ -92,12 +95,32 @@ package com.videojs.providers{
             _metadata = {};
             _throughputTimer = new Timer(250, 0);
             _throughputTimer.addEventListener(TimerEvent.TIMER, onThroughputTimerTick);
+            _currentTimeTimer  = new Timer(250);
+            _currentTimeTimer.addEventListener(TimerEvent.TIMER, onCurrentTimeTimer, false, 0, true);
             if (ExternalInterface.available)
             {
                 ExternalInterface.call('console.log', "[HTTPVideoProvider]");
             }
         }
 
+        private function onCurrentTimeTimer(evt:TimerEvent):void
+        {
+            _currentTime = _ns.time;
+            if (_currentTime != _lastCurrentTime && (!_canSeekAhead || !_isSeeking))
+            {
+                _lastCurrentTime = _currentTime;
+                //dispatchEvent(new TimeEvent(TimeEvent.CURRENT_TIME_CHANGE, false, false, currentTime));
+
+                /*
+                  A waiting event is dispatched when buffering begins.
+                  The buffering and timeupdate events can get out of sync.
+                  Video.js doesn't expect any timeupdates when in buffering state
+                */
+                if (!_isBuffering) {
+                  _model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
+                }
+            }
+        }
         public function get loop():Boolean{
             return _loop;
         }
@@ -360,6 +383,7 @@ package com.videojs.providers{
             {
                 _isSeeking = true;
                 _throughputTimer.stop();
+                _currentTimeTimer.stop();
                 if(_isPaused)
                 {
                     _pausedSeekValue = pTime;
@@ -393,10 +417,12 @@ package com.videojs.providers{
                 }
                 else if(pPercent > 1){
                     _throughputTimer.stop();
+                    _currentTimeTimer.stop();
                     _ns.seek((pPercent / 100) * _metadata.duration);
                 }
                 else{
                     _throughputTimer.stop();
+                    _currentTimeTimer.stop();
                     _ns.seek(pPercent * _metadata.duration);
 
                 }
@@ -411,6 +437,8 @@ package com.videojs.providers{
                 _model.broadcastEvent(new VideoPlaybackEvent(VideoPlaybackEvent.ON_STREAM_CLOSE, {}));
                 _throughputTimer.stop();
                 _throughputTimer.reset();
+                _currentTimeTimer.stop();
+                _currentTimeTimer.reset();
             }
         }
 
@@ -449,6 +477,10 @@ package com.videojs.providers{
             if(_throughputTimer)
             {
                 _throughputTimer.reset();
+            }
+            if(_currentTimeTimer)
+            {
+              _currentTimeTimer.reset();
             }
         }
 
@@ -508,6 +540,8 @@ package com.videojs.providers{
                   _loadCompleted = true;
                   _throughputTimer.stop();
                   _throughputTimer.reset();
+                  //_currentTimeTimer.stop();
+                  //_currentTimeTimer.reset();
                   _model.broadcastEventExternally(ExternalEventName.ON_CAN_PLAY_THROUGH);
               }
               // if it's still loading, but we know its duration, we can check to see if the current transfer rate
@@ -521,6 +555,8 @@ package com.videojs.providers{
                   if(__estimatedTimeToLoad <= _metadata.duration){
                       _throughputTimer.stop();
                       _throughputTimer.reset();
+                      //_currentTimeTimer.stop();
+                      //_currentTimeTimer.reset();
                       _canPlayThrough = true;
                       _model.broadcastEventExternally(ExternalEventName.ON_CAN_PLAY_THROUGH);
                   }
@@ -558,6 +594,8 @@ package com.videojs.providers{
                     _loadStartTimestamp = getTimer();
                     _throughputTimer.reset();
                     _throughputTimer.start();
+                    _currentTimeTimer.reset();
+                    _currentTimeTimer.start();
 
                     if(_model.autoplay){
                         _model.broadcastEventExternally(ExternalEventName.ON_RESUME);
@@ -632,6 +670,8 @@ package com.videojs.providers{
 
                     _throughputTimer.stop();
                     _throughputTimer.reset();
+                    _currentTimeTimer.stop();
+                    _currentTimeTimer.reset();
                     break;
 
                 case "NetStream.Seek.Notify":
@@ -643,6 +683,8 @@ package com.videojs.providers{
                     _loadStartTimestamp = getTimer();
                     _throughputTimer.reset();
                     _throughputTimer.start();
+                    _currentTimeTimer.reset();
+                    _currentTimeTimer.start();
                     break;
 
                 case "NetStream.Play.StreamNotFound":
