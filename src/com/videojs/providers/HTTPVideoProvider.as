@@ -659,6 +659,10 @@ package com.videojs.providers{
 
         private function onThroughputTimerTick(e:TimerEvent):void{
             calculateThroughput();
+            if(!_isBuffering)
+            {
+              _model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
+            }
         }
 
         public function onMetaData(pMetaData:Object):void{

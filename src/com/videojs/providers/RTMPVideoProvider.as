@@ -50,7 +50,7 @@ package com.videojs.providers{
         private var _loop:Boolean = false;
         private var _currentTime:Number = 0;
 		private var _lastCurrentTime:Number = 0;
-		private var _streamMonitor:Timer; 
+		private var _streamMonitor:Timer;
 
         private var _model:VideoJSModel;
 
@@ -63,29 +63,29 @@ package com.videojs.providers{
             _throughputTimer.addEventListener(TimerEvent.TIMER, onThroughputTimerTick);
             _currentTimeTimer  = new Timer(250);
             _currentTimeTimer.addEventListener(TimerEvent.TIMER, onCurrentTimeTimer, false, 0, true);
-			
-			//Start the streamMonitor timer 
+
+			//Start the streamMonitor timer
 			_streamMonitor  = new Timer(250);
-			_streamMonitor.addEventListener( TimerEvent.TIMER, onStreamMonitor ); 
-			_streamMonitor.start(); 
+			_streamMonitor.addEventListener( TimerEvent.TIMER, onStreamMonitor );
+			_streamMonitor.start();
         }
         private function onCurrentTimeTimer(evt:TimerEvent):void
         {
             _currentTime = _ns.time;
             if (_currentTime != _lastCurrentTime && (!_canSeekAhead || !_isSeeking))
-            {               
+            {
                 _lastCurrentTime = _currentTime;
                 //dispatchEvent(new TimeEvent(TimeEvent.CURRENT_TIME_CHANGE, false, false, currentTime));
-				
+
 				/*
 					A waiting event is dispatched when buffering begins.
 					The buffering and timeupdate events can get out of sync.
 					Video.js doesn't expect any timeupdates when in buffering state
 				*/
 				if (!_isBuffering) {
-					_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);	
+					_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
 				}
-            }   
+            }
         }
 
         public function get loop():Boolean{
@@ -491,7 +491,7 @@ package com.videojs.providers{
                     //_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
                 }
             }
-            
+
         }
 
         private function onRTMPRetryTimerTick(e:TimerEvent):void{
@@ -627,17 +627,17 @@ package com.videojs.providers{
             }
             _model.broadcastEvent(new VideoPlaybackEvent(VideoPlaybackEvent.ON_NETSTREAM_STATUS, {info:e.info}));
         }
-		
-		//On stream monitor timer 
-		private function onStreamMonitor( event:TimerEvent ):void 
-		{ 
+
+		//On stream monitor timer
+		private function onStreamMonitor( event:TimerEvent ):void
+		{
 			if (_ns) {
 				if (_ns.bufferLength == 0 && !_isBuffering) {
 					_isBuffering = true;
 					_model.broadcastEventExternally('waiting');
 				}
 			}
-		} 
+		}
 
         private function onThroughputTimerTick(e:TimerEvent):void{
             calculateThroughput();
@@ -717,7 +717,7 @@ package com.videojs.providers{
             //Console.log('ScriptCommand', cmd.toString());
             if(ExternalInterface.available){
                 ExternalInterface.call("videojs.FlashExtended.NS_ScriptCommand", cmd.toString());
-            }            
+            }
         }
         public function OverlayCommand(cmd:Object):void {
             //Console.log('OverlayCommand', cmd.toString());
