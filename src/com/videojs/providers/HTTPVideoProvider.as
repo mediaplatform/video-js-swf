@@ -383,7 +383,7 @@ package com.videojs.providers{
             {
                 _isSeeking = true;
                 _throughputTimer.stop();
-                _currentTimeTimer.stop();
+                //_currentTimeTimer.stop();
                 if(_isPaused)
                 {
                     _pausedSeekValue = pTime;
@@ -417,12 +417,12 @@ package com.videojs.providers{
                 }
                 else if(pPercent > 1){
                     _throughputTimer.stop();
-                    _currentTimeTimer.stop();
+                    //_currentTimeTimer.stop();
                     _ns.seek((pPercent / 100) * _metadata.duration);
                 }
                 else{
                     _throughputTimer.stop();
-                    _currentTimeTimer.stop();
+                    //_currentTimeTimer.stop();
                     _ns.seek(pPercent * _metadata.duration);
 
                 }
@@ -437,8 +437,8 @@ package com.videojs.providers{
                 _model.broadcastEvent(new VideoPlaybackEvent(VideoPlaybackEvent.ON_STREAM_CLOSE, {}));
                 _throughputTimer.stop();
                 _throughputTimer.reset();
-                _currentTimeTimer.stop();
-                _currentTimeTimer.reset();
+                //_currentTimeTimer.stop();
+                //_currentTimeTimer.reset();
             }
         }
 
@@ -478,10 +478,10 @@ package com.videojs.providers{
             {
                 _throughputTimer.reset();
             }
-            if(_currentTimeTimer)
-            {
-              _currentTimeTimer.reset();
-            }
+            //if(_currentTimeTimer)
+            //{
+            //  _currentTimeTimer.reset();
+            //}
         }
 
         private function initNetConnection():void{
@@ -594,8 +594,8 @@ package com.videojs.providers{
                     _loadStartTimestamp = getTimer();
                     _throughputTimer.reset();
                     _throughputTimer.start();
-                    _currentTimeTimer.reset();
-                    _currentTimeTimer.start();
+                    //_currentTimeTimer.reset();
+                    //_currentTimeTimer.start();
 
                     if(_model.autoplay){
                         _model.broadcastEventExternally(ExternalEventName.ON_RESUME);
@@ -622,7 +622,7 @@ package com.videojs.providers{
                         _isSeeking = false;
                         _model.broadcastEventExternally(ExternalEventName.ON_SEEK_COMPLETE);
                     }
-
+                    _currentTimeTimer.start();
                     _pausedSeekValue = -1;
                     _playbackStarted = true;
                     if(_pausePending){
@@ -657,6 +657,7 @@ package com.videojs.providers{
                     break;
 
                 case "NetStream.Play.Stop":
+                    _currentTimeTimer.stop();
                     if(!_loop){
                         _playbackStarted = false;
                         _hasEnded = true;
@@ -670,8 +671,8 @@ package com.videojs.providers{
 
                     _throughputTimer.stop();
                     _throughputTimer.reset();
-                    _currentTimeTimer.stop();
-                    _currentTimeTimer.reset();
+                    //_currentTimeTimer.stop();
+                    //_currentTimeTimer.reset();
                     break;
 
                 case "NetStream.Seek.Notify":
@@ -683,8 +684,8 @@ package com.videojs.providers{
                     _loadStartTimestamp = getTimer();
                     _throughputTimer.reset();
                     _throughputTimer.start();
-                    _currentTimeTimer.reset();
-                    _currentTimeTimer.start();
+                    //_currentTimeTimer.reset();
+                    //_currentTimeTimer.start();
                     break;
 
                 case "NetStream.Play.StreamNotFound":
