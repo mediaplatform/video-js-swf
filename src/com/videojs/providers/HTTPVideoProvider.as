@@ -622,7 +622,7 @@ package com.videojs.providers{
                         _isSeeking = false;
                         _model.broadcastEventExternally(ExternalEventName.ON_SEEK_COMPLETE);
                     }
-                    _currentTimeTimer.start();
+                    //_currentTimeTimer.start();
                     _pausedSeekValue = -1;
                     _playbackStarted = true;
                     if(_pausePending){
@@ -707,10 +707,10 @@ package com.videojs.providers{
 
         private function onThroughputTimerTick(e:TimerEvent):void{
             calculateThroughput();
-            if(!_isBuffering)
-            {
-              _model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
-            }
+            //if(!_isBuffering)
+            //{
+            //  _model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
+            //}
         }
 
         public function onMetaData(pMetaData:Object):void{
