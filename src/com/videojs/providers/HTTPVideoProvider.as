@@ -14,6 +14,7 @@ package com.videojs.providers{
     import flash.utils.ByteArray;
     import flash.utils.Timer;
     import flash.utils.getTimer;
+    import flash.external.ExternalInterface;
 
     public class HTTPVideoProvider extends EventDispatcher implements IProvider{
 
@@ -91,6 +92,10 @@ package com.videojs.providers{
             _metadata = {};
             _throughputTimer = new Timer(250, 0);
             _throughputTimer.addEventListener(TimerEvent.TIMER, onThroughputTimerTick);
+            if (ExternalInterface.available)
+            {
+                ExternalInterface.call('console.log', "[HTTPVideoProvider]");
+            }
         }
 
         public function get loop():Boolean{
