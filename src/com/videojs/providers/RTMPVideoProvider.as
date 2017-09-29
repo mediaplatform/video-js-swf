@@ -77,19 +77,30 @@ package com.videojs.providers{
         private function onCurrentTimeTimer(evt:TimerEvent):void
         {
             _currentTime = _ns.time;
+            if (ExternalInterface.available)
+            {
+                ExternalInterface.call('console.log', "[RTMPVideoProvider] _currentTime: " + _currentTime);
+                ExternalInterface.call('console.log', "[RTMPVideoProvider] _lastCurrentTime: " + _lastCurrentTime);
+            }
+
             if (_currentTime != _lastCurrentTime && (!_canSeekAhead || !_isSeeking))
             {
                 _lastCurrentTime = _currentTime;
                 //dispatchEvent(new TimeEvent(TimeEvent.CURRENT_TIME_CHANGE, false, false, currentTime));
 
-				/*
-					A waiting event is dispatched when buffering begins.
-					The buffering and timeupdate events can get out of sync.
-					Video.js doesn't expect any timeupdates when in buffering state
-				*/
-				if (!_isBuffering) {
-					_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
-				}
+      				/*
+      					A waiting event is dispatched when buffering begins.
+      					The buffering and timeupdate events can get out of sync.
+      					Video.js doesn't expect any timeupdates when in buffering state
+      				*/
+              if (ExternalInterface.available)
+              {
+                  ExternalInterface.call('console.log', "[RTMPVideoProvider] _isPlaying: " + _isPlaying);
+              }
+      				if (!_isBuffering && _isPlaying)
+              {
+      					_model.broadcastEventExternally(ExternalEventName.ON_TIME_CHANGE);
+      				}
             }
         }
 
@@ -536,6 +547,10 @@ package com.videojs.providers{
         }
 
         private function onNetStreamStatus(e:NetStatusEvent):void{
+          if (ExternalInterface.available)
+          {
+              ExternalInterface.call('console.log', "[RTMPVideoProvider] onNetStreamStatus event: " + e.info.code);
+          }
             switch(e.info.code){
                 case "NetStream.Play.Reset":
                     break;
@@ -602,6 +617,7 @@ package com.videojs.providers{
                 case "NetStream.Play.Stop":
                     _currentTimeTimer.stop();
                     _hasEnded = true;
+                    //_isBuffering = false;
                     _throughputTimer.stop();
                     _throughputTimer.reset();
                     break;
