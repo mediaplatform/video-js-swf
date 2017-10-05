@@ -55,13 +55,13 @@ package{
             _app.model.stageRect = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
 
             // add content-menu version info
-
-            var _ctxVersion:ContextMenuItem = new ContextMenuItem("VideoJS Flash Component v" + VERSION, false, false);
-            var _ctxAbout:ContextMenuItem = new ContextMenuItem("Copyright © 2014 Brightcove, Inc.", false, false);
-            var _ctxMenu:ContextMenu = new ContextMenu();
-            _ctxMenu.hideBuiltInItems();
-            _ctxMenu.customItems.push(_ctxVersion, _ctxAbout);
-            this.contextMenu = _ctxMenu;
+            //Removed for WC-4823
+            //var _ctxVersion:ContextMenuItem = new ContextMenuItem("VideoJS Flash Component v" + VERSION, false, false);
+            //var _ctxAbout:ContextMenuItem = new ContextMenuItem("Copyright © 2014 Brightcove, Inc.", false, false);
+            //var _ctxMenu:ContextMenu = new ContextMenu();
+            //_ctxMenu.hideBuiltInItems();
+            //_ctxMenu.customItems.push(_ctxVersion, _ctxAbout);
+            //this.contextMenu = _ctxMenu;
 
         }
 
