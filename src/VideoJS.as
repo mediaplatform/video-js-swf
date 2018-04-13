@@ -37,6 +37,7 @@ package{
 
         private function init():void{
             // Allow JS calls from other domains
+            ExternalInterface.call("console.log", "Parisi");
             Security.allowDomain("*");
             Security.allowInsecureDomain("*");
 
