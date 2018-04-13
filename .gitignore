@@ -11,3 +11,7 @@ target
 .idea/
 sandbox/*
 !sandbox/*.example
+.actionScriptProperties
+.project
+.settings
+html-template/
