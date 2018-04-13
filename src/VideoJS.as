@@ -30,6 +30,7 @@ package{
         private var _stageSizeTimer:Timer;
 
         public function VideoJS(){
+            ExternalInterface.call("console.log", "Parisi");
             _stageSizeTimer = new Timer(250);
             _stageSizeTimer.addEventListener(TimerEvent.TIMER, onStageSizeTimerTick);
             addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
