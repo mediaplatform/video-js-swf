@@ -369,10 +369,11 @@ package{
                 case "rtmpStream":
                     _app.model.rtmpStream = String(pValue);
                     break;
-				case "initialBufferTime":
-					_app.model.initialBufferTime = Number(pValue);
-					break;
+				        case "initialBufferTime":
+					          _app.model.initialBufferTime = Number(pValue);
+					          break;
                 default:
+                    ExternalInterface.call("console.log", "Parisi --- " + pPropertyName);
                     _app.model.broadcastErrorEventExternally(ExternalErrorEventName.PROPERTY_NOT_FOUND, pPropertyName);
                     break;
             }
